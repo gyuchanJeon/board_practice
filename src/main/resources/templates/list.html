@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>list</title>
+    <style>
+        a {
+            text-decoration: none;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 1080px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            width: 100%;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            background-color: black;
+            color: white;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .header_title {
+            font-size: 25px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .main {
+            width: 100%;
+            height: 700px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        .th,
+        .td {
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            border-bottom: 1px solid gainsboro;
+            padding: 15px;
+            box-sizing: border-box;
+
+            & > div {
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                text-align: center;
+            }
+        }
+
+        .viewLink {
+            font-weight: bold;
+            text-decoration: none;
+            color: black;
+
+            &:hover {
+                text-decoration: underline;
+                cursor: pointer;
+            }
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            & > a {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 50px;
+                height: 30px;
+                border: none;
+                margin-left: 5px;
+                border-radius: 8px;
+                font-size: 14px;
+                color: white;
+
+                &:first-child {
+                    background-color: cornflowerblue;
+                }
+
+                &:last-child {
+                    background-color: indianred;
+                }
+
+                &:hover {
+                    opacity: 0.8;
+                }
+
+            }
+        }
+
+        .writeBtn {
+            position: absolute;
+            right: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: none;
+            border-radius: 8px;
+            background-color: gray;
+            font-size: 16px;
+            width: 120px;
+            color: white;
+            padding: 10px;
+            margin-top: 10px;
+
+            &:hover {
+                cursor: pointer;
+                opacity: 0.8;
+            }
+        }
+
+        .pagination {
+            width: 100%;
+            min-height: 60px;
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            &:first-child > a {
+                border-right: none !important;
+            }
+        }
+
+        .pageBtn {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 40px;
+            height: 40px;
+            background-color: white;
+            border: 1px solid gray;
+            color: black;
+
+            &:hover {
+                cursor: pointer;
+                background-color: gainsboro;
+            }
+        }
+
+        .disabled {
+            pointer-events: none;
+            color: gray;
+            &:hover {
+                cursor: not-allowed;
+            }
+
+        }
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <span class="header_title">Gyubook's Anonymous Board</span>
+    </div>
+    <div class="main">
+        <div class="th">
+            <div>번호</div>
+            <div>제목</div>
+            <div>내용</div>
+            <div>작성자</div>
+            <div>기능</div>
+        </div>
+        <div class="td" th:each="article: ${paging}">
+            <div th:text="${article.no}"></div>
+            <div>
+                <a class="viewLink" th:text="${article.title}"
+                   th:href="@{/view(no=${article.no},title=${article.title},content=${article.content},writer=${article.writer})}"></a>
+            </div>
+            <div th:text="${article.content}"></div>
+            <div th:text="${article.writer}"></div>
+            <div class="buttons">
+                <a th:href="@{/edit(no=${article.no},title=${article.title},content=${article.content},writer=${article.writer})}"
+                   class="edit">수정</a>
+                <a th:href="@{/delete(no=${article.no})}" class="delete">삭제</a>
+            </div>
+        </div>
+        <div class="pagination" th:if="${!paging.isEmpty()}">
+            <div class="pageBtns">
+                <th:block th:if="${paging.hasPrevious()}">
+                    <a th:class="pageBtn" th:href="@{/(page=${(paging.number)-1})}">
+                        <span>이전</span>
+                    </a>
+                </th:block>
+                <th:block th:if="${!paging.hasPrevious()}">
+                    <a class="pageBtn disabled" th:href="@{/(page=${(paging.number)-1})}">
+                        <span>이전</span>
+                    </a>
+                </th:block>
+            </div>
+            <div class="pageBtns" th:each="page : ${#numbers.sequence(0, paging.totalPages - 1)}"
+                 th:if="${page>=paging.number - 5 and page <= paging.number + 5}"
+                 th:classappend="${page == paging.number} ? 'active'">
+                <a class="pageBtn" th:text="${page+1}" th:href="@{/(page=${page})}"></a>
+            </div>
+            <div class="pageBtns">
+                <th:block th:if="${paging.hasNext()}">
+                    <a class="pageBtn" th:href="@{/(page=${(paging.number)+1})}">
+                        <span>다음</span>
+                    </a>
+                </th:block>
+                <th:block th:if="${!paging.hasNext()}">
+                    <a class="pageBtn disabled" th:href="@{/(page=${(paging.number)+1})}">
+                        <span>다음</span>
+                    </a>
+                </th:block>
+            </div>
+            <a th:href="@{/write}" class="writeBtn">작성하기</a>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const status = urlParams.get('status');
+    if (status === "successD") {
+        alert('게시물이 삭제되었습니다.')
+        window.location.href = "/";
+    } else if (status === "successW") {
+        alert('게시물이 작성되었습니다.')
+        window.location.href = "/";
+    } else if (status === "successE") {
+        alert('게시물이 수정되었습니다.')
+        window.location.href = "/";
+    }
+</script>
