@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.List;
 import java.util.Objects;
 
 @Log4j2
@@ -25,12 +24,12 @@ public class BoardController {
     public String List(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
         Page<BoardDTO> paging = boardService.selectAllArticles(page);
         model.addAttribute("paging", paging);
-        return "list";
+        return "/list";
     }
 
     @GetMapping("/write")
     public String Write() {
-        return "write";
+        return "/write";
     }
 
     @GetMapping("/edit")
@@ -43,14 +42,14 @@ public class BoardController {
         model.addAttribute("title", title);
         model.addAttribute("content", content);
         model.addAttribute("writer", writer);
-        return "edit";
+        return "/edit";
     }
 
     @GetMapping("/view")
     public String View(BoardDTO boardDTO, Model model) {
         log.info("view용 boardDTO : " + boardDTO);
         model.addAttribute("board", boardDTO);
-        return "view";
+        return "/view";
     }
 
     @GetMapping("/delete")
@@ -59,7 +58,7 @@ public class BoardController {
         if (Objects.equals(status, "success")) {
             return "redirect:/?status=successD";
         }
-        return "redirect:error";
+        return "redirect:/error";
     }
 
     @PostMapping("/write")
@@ -68,7 +67,7 @@ public class BoardController {
         if (Objects.equals(status, "success")) {
             return "redirect:/?status=successW";
         }
-        return "redirect:error";
+        return "redirect:/error";
     }
 
     @PostMapping("/edit")
