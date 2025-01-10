@@ -161,6 +161,7 @@
             </div>
             <div class="buttons">
                 <a th:href="@{/}" class="cancel">목록</a>
+                <a th:href="@{/edit(no=${board.no},title=${board.title},content=${board.content},writer=${board.writer})}" class="cancel">수정</a>
                 <a th:href="@{/delete(no=${board.no})}" class="cancel">삭제</a>
             </div>
         </form>
